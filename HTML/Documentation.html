@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="../stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>G.T.T. by Marco-Ricci</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>G.T.T.</h1>
+        <h2>Greek Temple Tour - Documentation</h2>
+        <a href="https://github.com/Marco-Ricci/G.T.T." class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h3>
+<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Basics</h3>
+
+<p>First, to create a javascript 3D program, we have to create 3 basic elements: the scene, the camera and the renderer.<br><br>
+<p style = "font-weight:bold">Scene</p>
+   <p>The scene is the "canvas" where the renderer "draw" all the elements of our program: without its the renderer are like a painter without a canvas. The script to do it is simple <br><br> var scene = new THREE.Scene();<br><br> With this script we create a new universal variable named "scene", that defines a new THREE.scene.<br><br></p>  
+
+<p style = "font-weight:bold">Camera</p>
+   <p>The camera is like our eyes: without them we can't see anything, and without the camera it's the same thing. This is the script to make a perspective camera, that is a particular type of camera with perspective projection: <br><br> var camera = new THREE.PerspectiveCamera( 50, window.innerWidth/window.innerHeight, 0.001, 1000);<br><br> The variable has 4 parameters: <br></p>
+
+<ul>
+	<li>fov — Camera frustum vertical field of view</li>
+	<li>aspect — Camera frustum aspect ratio</li>
+	<li>near — Camera frustum near plane</li>
+	<li>far — Camera frustum far plane</li>
+<br><p>Then we have to set the position of the camera with the controls "camera.position.x, camera.position.y, camera.position.z"</p><br><br>
+
+<p style = "font-weight:bold">Renderer</p>
+   <p>The renderer is the "painter" that re-draw continuously all the elements of the program on the scene. This is the script to create it:<br><br>var renderer = new THREE.WebGLRenderer();<br>renderer.setSize( window.innerWidth, window.innerHeight );<br>document.body.appendChild( renderer.domElement );<br><br>This script create a variable "renderer", that defines a new THREE.WebGLrenderer, while renderer.setSize() set renderer's dimensions (in this case they're full screen). The "document.body.appendChild( renderer.domElement );" is automatically created by the renderer; we just need to add it to our page. </p> 
+   
+<h3>
+<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Basic objects</h3>
+
+<p>Now, our scene is empty, because we haven't drown any object yet. The basics objects of GTT are boxes, cylinders and prisms.<br><br> All the objects are composed by three elements, that are a geometry, a material and a mesh: the geometry is the function that defines the structure of the object, the material is the function that defines its texture and the mesh is the function that combines the geometry and the material; in particular the mesh becomes the object. All these three elements are needed to build the elements. <br><br></p>
+
+<p style = "font-weight:bold">Boxes</p>
+   <p>Boxes have a simple script:
+   <pre>
+	   <br>var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+	   <br>var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+	   <br>var cube = new THREE.Mesh( geometry, material );
+	   <br>scene.add( cube );
+	   <br>cube.position.x = 0
+	   <br>cube.position.y = 0
+	   <br>cube.position.z = 0
+   </pre>
+   We have obviously a geometry, that has 3 parameters width, height and depth, that define the size of the edges of the box   (in particular this is a cube), a material and a mesh; We also have the command "scene.add(cube);", that add our object to the scene, and the commands cube.position.x/y/z, that set the position x, y, z of the cube in the 3D space.<br><br></p>
+
+	<p style = "font-weight:bold">Cylinders</p>
+   <p>Also cylinders have a simple script:
+   <pre>var geometry = new THREE.CylinderGeometry( radiusTop, radiusBottom, height, radiusSegments );
+   <br>var material = new THREE.MeshBasicMaterial( {color: c} );<br>var cylinder = new THREE.Mesh( geometry, material );
+   <br>s.add( cylinder );<br>cylinder.position.x = x;<br>cylinder.position.y = y;<br>cylinder.position.z = z;</pre>
+   <br><br>Also here we have a geometry, the material and the mesh. The cylinders have 4 principals parameters:<br><br></p>
+   
+     <ul>
+	<li>radiusTop — Radius of the cylinder at the top</li>
+	<li>radiusBottom — Radius of the cylinder at the bottom</li>
+	<li>height — Height of the cylinder. Default is 100.</li>
+	<li>radiusSegments — Number of segmented faces around the circumference of the cylinder</li>
+	</ul>
+	<p><br><br>As for the boxes, "scene.add()" and "position.x/y/z" respective adds the cylinders at the scene and sets the position.</p>
+   
+   
+   <p style = "font-weight:bold">Prism</p>
+   <p>Making the prism is a bit more difficult: to create it we have to create 6 vector, the vertices, that are automatically numbered fro 0 to 5, according to the rule of the left hand, and after we have to create triangles between three vertices to make the prism.<br> This is the script:
+   <pre>var triangleGeometry = new THREE.Geometry(); 
+<br>triangleGeometry.vertices.push(new THREE.Vector3(-20,  24.2, 40));
+triangleGeometry.vertices.push(new THREE.Vector3(20,  24.2, 40)); 
+triangleGeometry.vertices.push(new THREE.Vector3(-1,  30.2, 40));
+triangleGeometry.vertices.push(new THREE.Vector3(-20,  24.2  , -40));  //Definition of the vertices
+triangleGeometry.vertices.push(new THREE.Vector3(20,  24.2, -40)); 
+triangleGeometry.vertices.push(new THREE.Vector3(-1,  30.2, -40));
+triangleGeometry.faces.push(new THREE.Face3(0, 1, 2));
+triangleGeometry.faces.push(new THREE.Face3(3, 4, 5));
+<br><br>triangleGeometry.faces.push(new THREE.Face3(0, 2, 5));
+triangleGeometry.faces.push(new THREE.Face3(0, 3, 5));
+<br><br>triangleGeometry.faces.push(new THREE.Face3(1, 2, 5));   //Union of the vertices
+triangleGeometry.faces.push(new THREE.Face3(1, 4, 5));
+<br><br>triangleGeometry.faces.push(new THREE.Face3(0, 1, 3));
+triangleGeometry.faces.push(new THREE.Face3(1, 3, 4));
+   <br><br><br>var triangleMaterial = new THREE.MeshBasicMaterial({ //The material function
+   color:0xaeFeeF, 
+   side:THREE.DoubleSide
+   });
+   <br><br>var triangleMesh = new THREE.Mesh(triangleGeometry, triangleMaterial); // The mesh function
+triangleMesh.position.set(1, 1, 1);
+   <br><br>scene.add(triangleMesh); //Add to the scene
+   </pre>
+   </p>
+   <br><br>
+   
+	<p style = "font-weight:bold">Movements</p>
+   <p>We have created a scene, a camera, a renderer and the objects that make our temple, and now we need to move our camera around the temple to watch it; the camera has two movements:</p>
+   
+    <ul>
+	<li>The steps forward, backward, left, right, up and down with keys</li>
+	<li>The perspective movement up, down, left and right with keys or mouse</li>
+	</ul>
+	
+	<p style = "font-weight:bold">Steps</p>
+	<p>To make the camera moving forward, backward, ecc., we have to create a function that "perceived" the external message from the keyboard and comunicate to the program the input; then the program decide how to act. To set this function we have a simlple code:</p><br>
+
+	<pre>
+document.onkeydown = function (e) {;     //Function that perceives the input from the keyboard
+   <br>e = e || window.event;  
+   <br>if (e.keyCode == '87') {		// "W"
+	camera.position.x += delta * Math.cos(alpha) * Math.cos(beta);
+	camera.position.y += delta * Math.sin(beta);
+	camera.position.z += delta * Math.sin(alpha) * Math.cos(beta);
+			<br>}</pre>
+   <br><br>This script make the camera move forward on the perspective axis; then we have to set the other ways (for moving backward is enough change the signs, and for the other ways we have to make the camera translit) </p>
+   
+	<p style = "font-weight:bold">Perspective</p>
+	<p>Move the camera perspective is more difficult: we have to create a vector bounded to the camera which will move of an imaginary sphere that has like center the camera. To do this we have to set two different circumferences, one vertical and one horizontal, respectively called beta and alpha, that we utilize to make the vactor move: <br><br>
+	   </p>
+
+	<pre>
+	var viewDirection = new THREE.Vector3(<br>
+	camera.position.x + 10 * Math.cos(alpha) * Math.cos(beta),<br>
+	camera.position.y + 10 * Math.sin(beta),<br>                                   //set the position of the Vector (put it in the renderer function)
+	camera.position.z + 10 * Math.sin(alpha) * Math.cos(beta));<br>
+
+	camera.lookAt(viewDirection);<br>
+			<br></pre>
+   <br><br>We can move the camera with the directional arrows or with the mouse: with the arrows we simply increment or decrement alpha and beta like for the camera position. For the mouse instead we have to set some function and some event listener : the event listener transposing the input, while the function make the camera change perspective. </p>
+   
+	<pre>
+document.addEventListener( 'mousedown', onDocumentMouseDown, false );<br>
+document.addEventListener( 'mousemove', onDocumentMouseMovement, false );<br>
+document.addEventListener( 'mouseup',   onDocumentMouseUp, false );	<br>			
+document.addEventListener( 'keydown',   onKeyDown, false );<br><br><br>
+
+var isMouseDown = false;<br>
+		var mouseX;<br>
+		var mouseY;<br><br>
+		
+		var onDocumentMouseDown = function(e) {<br>
+			isMouseDown = true;<br>
+			mouseX = e.clientX;<br>
+			mouseY = e.clientY;<br>
+		}<br><br>
+					
+		var onDocumentMouseMovement = function(e) {<br>
+			if (isMouseDown) {<br>
+				deltaX = e.clientX - mouseX;<br>
+				deltaY = e.clientY - mouseY;<br>
+				mouseX = e.clientX;<br>
+				mouseY = e.clientY;	<br><br>				
+				
+				beta += (-deltaY*0.01);<br>
+				alpha += (deltaX*0.01);<br><br>
+				
+				
+				if (beta > Math.PI/2) 	beta = Math.PI/2;<br>
+				if (beta < -Math.PI/2)  beta = -Math.PI/2;<br>
+			
+			}<br>
+		}<br><br>
+		
+		var onDocumentMouseUp = function (e) {<br>
+			isMouseDown = false;<br>
+		}<br>
+	<br></pre>
+  
+
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/Marco-Ricci/G.T.T./zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/Marco-Ricci/G.T.T./tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/Marco-Ricci/G.T.T."></a> is maintained by <a href="https://github.com/Marco-Ricci">Marco-Ricci</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
